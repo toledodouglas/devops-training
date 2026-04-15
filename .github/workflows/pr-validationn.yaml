@@ -36,8 +36,8 @@ jobs:
 
       run: |
           dotnet-sonarscanner begin \
-            /k:"douglastoledo_api" \
-            /o:"douglastoledo" \
+            /k:"toledodouglas_api" \
+            /o:"toledodouglas" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
