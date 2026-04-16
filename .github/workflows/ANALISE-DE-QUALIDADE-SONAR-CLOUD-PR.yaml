@@ -45,7 +45,7 @@ jobs:
             /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
       
     - name: Restaurar Pacotes(.NET)
-      run: run: dotnet restore src/MeuProjeto.sln
+      run: dotnet restore src/MeuProjeto.sln
 
     - name: Compilar Código (.NET)
       run: dotnet build src/MeuProjeto.sln --configuration Release --no-restore
