@@ -24,6 +24,8 @@ resource "azurerm_linux_web_app" "app" {
   location            = azurerm_service_plan.plan.location
   service_plan_id     = azurerm_service_plan.plan.id
 
+  client_certificate_enabled = false
+
   site_config {
     application_stack {
       dotnet_version = "8.0" 
