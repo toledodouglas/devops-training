@@ -1,4 +1,4 @@
-name: pr-validatition
+name: ANALISE-DE-QUALIDADE-SONAR-CLOUD-PR
 
 on:
   pull_request:
@@ -36,7 +36,7 @@ jobs:
 
       run: |
           dotnet-sonarscanner begin \
-            /k:"toledodouglas_api" \
+            /k:"toledodouglas_devops-training" \
             /o:"toledodouglas" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
