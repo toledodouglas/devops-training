@@ -28,9 +28,16 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+    - name: Instalar Terraform
+      uses: hashicorp/setup-terraform@v3
+
     - name: Terraform Init
       run: terraform init
       working-directory: ./infra
+
+    - name: Terraform Plan
+      working-directory: ./infra
+      run: terraform plan -var-file="ambientes/dev.tfvars"
 
     - name: Terraform Apply (DEV)
       env: 
@@ -38,8 +45,8 @@ jobs:
         ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      run: terraform apply -auto-approve -var="environment=dev"
       working-directory: ./infra
+      run: terraform apply -auto-approve -var="environment=dev"
 
     - name: Deploy para Azure App Service (DEV)
       uses: azure/webapps-deploy@v3
