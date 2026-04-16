@@ -2,7 +2,9 @@ name: ANALISE-DE-QUALIDADE-SONAR-CLOUD-PR
 
 on:
   pull_request:
-    branches: [develop]
+    types: [opened, synchronize, reopened] # Eventos explícitos
+    branches: 
+      - develop
 
 jobs:
   build-and-analyse:
