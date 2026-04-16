@@ -29,8 +29,8 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Terraform Init
-      run: terraform init
       working-directory: ./infra
+      run: terraform init
 
     - name: Terraform Apply (DEV)
       env: 
