@@ -45,13 +45,13 @@ jobs:
             /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
       
     - name: Restaurar Pacotes(.NET)
-      run: dotnet restore src/MeuProjeto.sln
+      run: dotnet restore src/MeuProjeto.slnx
 
     - name: Compilar Código (.NET)
-      run: dotnet build src/MeuProjeto.sln --configuration Release --no-restore
+      run: dotnet build src/MeuProjeto.slnx --configuration Release --no-restore
 
     - name: Testar Código (.NET)
-      run: dotnet test src/MeuProjeto.sln --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+      run: dotnet test src/MeuProjeto.slnx --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
 
     - name: Converter Relatório de Cobertura
       run: cp TestResults/*/coverage.cobertura.xml coverage.xml || true
