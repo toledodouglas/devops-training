@@ -1,0 +1,48 @@
+name: DEPLOY DEV 
+
+on: 
+  push:
+    branches: [develop]
+
+jobs:
+  build-and-deploy:
+    name: Provisionar e Lançar (DEV)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Baixar código
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Configurar dotnet
+      user: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    
+    - name: Compilar Artefato (.NET Publish)
+      run: dotnet publish --configuration Release --output ./app-publish
+
+    - name: Login Azure
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ./infra
+
+    - name: Terraform Apply (DEV)
+      env: 
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      run: terraform apply -auto-approve -var="environment=dev"
+      working-directory: ./infra
+
+    - name: Deploy para Azure App Service (DEV)
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: 'meu-app-dev'
+        package: './app-publish'

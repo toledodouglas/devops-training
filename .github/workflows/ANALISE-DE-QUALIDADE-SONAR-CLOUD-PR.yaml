@@ -1,8 +1,10 @@
-name: pr-validatition
+name: ANALISE-DE-QUALIDADE-SONAR-CLOUD-PR
 
 on:
   pull_request:
-    branches: [develop]
+    types: [opened, synchronize, reopened] # Eventos explícitos
+    branches: 
+      - develop
 
 jobs:
   build-and-analyse:
@@ -36,17 +38,20 @@ jobs:
 
       run: |
           dotnet-sonarscanner begin \
-            /k:"minha-org_meu-projeto" \
-            /o:"minha-org" \
+            /k:"toledodouglas_devops-training" \
+            /o:"toledodouglas" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
       
+    - name: Restaurar Pacotes(.NET)
+      run: dotnet restore src/MeuProjeto.slnx
+
     - name: Compilar Código (.NET)
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build src/MeuProjeto.slnx --configuration Release --no-restore
 
     - name: Testar Código (.NET)
-      run: dotnet test --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+      run: dotnet test src/MeuProjeto.slnx --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
 
     - name: Converter Relatório de Cobertura
       run: cp TestResults/*/coverage.cobertura.xml coverage.xml || true
