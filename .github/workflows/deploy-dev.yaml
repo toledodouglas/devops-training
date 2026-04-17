@@ -21,8 +21,7 @@ jobs:
         dotnet-version: 8.0.x
     
     - name: Compilar Artefato (.NET Publish)
-      working-directory: ./src/MinhaApi
-      run: dotnet publish ./src/MinhaApi/MinhaApi.csproj --configuration Release --output ${{ github.workspace }}/app-publish
+      run: dotnet publish ./src/backend/Api.csproj --configuration Release --output ${{ github.workspace }}/app-publish
 
     - name: Login Azure
       uses: azure/login@v2
