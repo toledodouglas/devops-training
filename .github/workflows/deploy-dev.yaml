@@ -49,8 +49,11 @@ jobs:
       working-directory: ./infra
       run: terraform apply -var-file="ambientes/dev.tfvars" -auto-approve
 
+    - name: Publish
+      run: dotnet publish ./src/MinhaApi/MinhaApi.csproj --configuration Release --output ${{ github.workspace }}/app-publish
+
     - name: Deploy para Azure App Service (DEV)
       uses: azure/webapps-deploy@v3
       with:
         app-name: 'app-devops-training-dev-toledo'
-        package: './app-publish'
+        package: '${{ github.workspace }}/app-publish'
