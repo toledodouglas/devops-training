@@ -52,5 +52,5 @@ jobs:
     - name: Deploy para Azure App Service (DEV)
       uses: azure/webapps-deploy@v3
       with:
-        app-name: 'meu-app-dev'
+        app-name: 'app-devops-training-dev-toledo'
         package: './app-publish'
