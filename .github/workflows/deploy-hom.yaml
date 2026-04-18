@@ -1,0 +1,58 @@
+name: DEPLOY HOM 
+
+on: 
+  push:
+    tags: 
+      - 'v*'
+
+jobs:
+  build-and-deploy:
+    name: Provisionar e Lançar (HOM)
+    runs-on: ubuntu-latest
+
+    environment: hom
+
+    steps:
+    - name: Baixar código
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Configurar dotnet
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    
+    - name: Compilar Artefato (.NET Publish)
+      run: dotnet publish ./src/backend/Api.csproj --configuration Release --output ${{ github.workspace }}/app-publish
+
+    - name: Login Azure
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Instalar Terraform
+      uses: hashicorp/setup-terraform@a1502cd9e758c50496cc9ac5308c4843bcd56d36 # v3.0.0
+
+    - name: Terraform Init
+      working-directory: ./infra
+      run: terraform init
+
+    - name: Terraform Plan
+      working-directory: ./infra
+      run: terraform plan -var-file="ambientes/hom.tfvars"
+
+    - name: Terraform Apply (HOM)
+      env: 
+        ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      working-directory: ./infra
+      run: terraform apply -var-file="ambientes/hom.tfvars" -auto-approve
+
+    - name: Deploy para Azure App Service (HOM)
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: 'app-devops-training-hom-toledo'
+        package: '${{ github.workspace }}/app-publish'
