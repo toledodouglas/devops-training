@@ -1,8 +1,7 @@
 name: DEPLOY HOM 
 
 on: 
-  push:
-    workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
