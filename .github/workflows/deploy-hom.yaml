@@ -1,9 +1,7 @@
 name: DEPLOY HOM 
 
 on: 
-  push:
-    tags: 
-      - 'v*'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -36,7 +34,7 @@ jobs:
 
     - name: Terraform Init
       working-directory: ./infra
-      run: terraform init
+      run: terraform init -backend-config="key=hom.terraform.tfstate"
 
     - name: Terraform Plan
       working-directory: ./infra

@@ -9,6 +9,9 @@ jobs:
     name: Provisionar e Lançar (DEV)
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
     - name: Baixar código
       uses: actions/checkout@v4
@@ -33,7 +36,7 @@ jobs:
 
     - name: Terraform Init
       working-directory: ./infra
-      run: terraform init
+      run: terraform init -backend-config="key=dev.terraform.tfstate"
 
     - name: Terraform Plan
       working-directory: ./infra
@@ -53,3 +56,10 @@ jobs:
       with:
         app-name: 'app-devops-training-dev-toledo'
         package: '${{ github.workspace }}/app-publish'
+      
+    - name: Gerar Tag de Versão Automática
+      id: tag_version
+      uses: mathieudutour/github-tag-action@v6.2 
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        default_bump: patch

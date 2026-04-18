@@ -2,8 +2,9 @@ name: DEPLOY PROD
 
 on: 
   push:
-    branches: 
+    branches:
       - main
+    workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -36,7 +37,7 @@ jobs:
 
     - name: Terraform Init
       working-directory: ./infra
-      run: terraform init
+      run: terraform init -backend-config="key=prod.terraform.tfstate"
 
     - name: Terraform Plan
       working-directory: ./infra
