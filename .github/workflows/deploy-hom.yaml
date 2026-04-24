@@ -21,11 +21,11 @@ jobs:
       with:
         dotnet-version: 10.0.x
 
-    - name: Limpar solução (.NET Clean)
-      run: dotnet clean ./src/backend/Estoque.sln --configuration Release
-
     - name: Restaurar pacotes (.NET Restore)
       run: dotnet restore ./src/backend/Estoque.sln
+
+    - name: Limpar solução (.NET Clean)
+      run: dotnet clean ./src/backend/Estoque.sln --configuration Release --no-restore
 
     - name: Compilar solução (.NET Build)
       run: dotnet build ./src/backend/Estoque.sln --configuration Release --no-restore
