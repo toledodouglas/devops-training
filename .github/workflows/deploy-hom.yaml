@@ -19,10 +19,22 @@ jobs:
     - name: Configurar dotnet
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
-    
-    - name: Compilar Artefato (.NET Publish)
-      run: dotnet publish ./src/backend/Api.csproj --configuration Release --output ${{ github.workspace }}/app-publish
+        dotnet-version: 10.0.x
+
+    - name: Limpar solução (.NET Clean)
+      run: dotnet clean ./src/backend/Estoque.sln --configuration Release
+
+    - name: Restaurar pacotes (.NET Restore)
+      run: dotnet restore ./src/backend/Estoque.sln
+
+    - name: Compilar solução (.NET Build)
+      run: dotnet build ./src/backend/Estoque.sln --configuration Release --no-restore
+
+    - name: Executar testes (.NET Test)
+      run: dotnet test ./src/backend/Estoque.sln --configuration Release --no-build --verbosity normal
+
+    - name: Publicar API (.NET Publish)
+      run: dotnet publish ./src/backend/Estoque.API/Estoque.API.csproj --configuration Release --no-build --output ${{ github.workspace }}/app-publish
 
     - name: Login Azure
       uses: azure/login@v2

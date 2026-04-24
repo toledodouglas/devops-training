@@ -26,7 +26,7 @@ jobs:
     - name: Instalar dotnet
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 10.0.x
         
     - name: Instalar SonarScanner para .NET
       run: dotnet tool install --global dotnet-sonarscanner
@@ -44,14 +44,17 @@ jobs:
             /d:sonar.host.url="https://sonarcloud.io" \
             /d:sonar.cs.vscoveragexml.reportsPaths=coverage.xml
       
-    - name: Restaurar Pacotes(.NET)
-      run: dotnet restore src/Project.slnx
+    - name: Limpar solução (.NET Clean)
+      run: dotnet clean src/backend/Estoque.sln --configuration Release
 
-    - name: Compilar Código (.NET)
-      run: dotnet build src/Project.slnx --configuration Release --no-restore
+    - name: Restaurar pacotes (.NET Restore)
+      run: dotnet restore src/backend/Estoque.sln
 
-    - name: Testar Código (.NET)
-      run: dotnet test src/Project.slnx --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
+    - name: Compilar solução (.NET Build)
+      run: dotnet build src/backend/Estoque.sln --configuration Release --no-restore
+
+    - name: Testar código (.NET Test)
+      run: dotnet test src/backend/Estoque.sln --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage"
 
     - name: Converter Relatório de Cobertura
       run: cp TestResults/*/coverage.cobertura.xml coverage.xml || true
