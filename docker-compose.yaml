@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql-server-devops
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=SuperSenhaDevOps123!
+    ports:
+      - "1433:1433" 
+
+  api:
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    container_name: api-devops
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db 
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Database=TreinamentoDB;User Id=sa;Password=SuperSenhaDevOps123!;TrustServerCertificate=True;
