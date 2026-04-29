@@ -34,6 +34,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("SPA", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:5277",
+                "https://localhost:7096")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithExposedHeaders("Location");
+    });
+});
+
 var app = builder.Build();
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
@@ -43,6 +58,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("SPA");
 app.UseAuthentication();
 app.UseHttpsRedirection();
 app.UseAuthorization();
