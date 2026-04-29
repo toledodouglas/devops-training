@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using Estoque.API.Middlewares;
 using Estoque.Application.DependencyInjection;
 using Estoque.Infrastructure.DependencyInjection;
@@ -7,7 +8,20 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
+
+if (!string.IsNullOrEmpty(builder.Environment.EnvironmentName))
+{
+    builder.Configuration.AddJsonFile(
+        $"appsettings.{builder.Environment.EnvironmentName}.local.json",
+        optional: true,
+        reloadOnChange: true);
+}
+
+builder.Services.AddControllers().AddJsonOptions(o =>
+{
+    o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    o.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
