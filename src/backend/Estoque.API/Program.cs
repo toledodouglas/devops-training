@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using Estoque.API.Middlewares;
 using Estoque.Application.DependencyInjection;
 using Estoque.Infrastructure.DependencyInjection;
@@ -7,7 +8,20 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
+
+if (!string.IsNullOrEmpty(builder.Environment.EnvironmentName))
+{
+    builder.Configuration.AddJsonFile(
+        $"appsettings.{builder.Environment.EnvironmentName}.local.json",
+        optional: true,
+        reloadOnChange: true);
+}
+
+builder.Services.AddControllers().AddJsonOptions(o =>
+{
+    o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    o.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -34,6 +48,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("SPA", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:5277",
+                "https://localhost:7096")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithExposedHeaders("Location");
+    });
+});
+
 var app = builder.Build();
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
@@ -43,6 +72,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("SPA");
 app.UseAuthentication();
 app.UseHttpsRedirection();
 app.UseAuthorization();
