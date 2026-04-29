@@ -18,12 +18,20 @@ export function RegisterPage() {
     setFeedback(null)
 
     try {
-      await register({ nomeCompleto, idade, email: email.trim(), senha })
+      const idadeNumerica = Number.isFinite(idade) ? Math.trunc(idade) : 0
+      await register({
+        nomeCompleto: nomeCompleto.trim(),
+        idade: idadeNumerica,
+        email: email.trim(),
+        senha,
+      })
       navigate('/login', { replace: true })
-    } catch {
-      setFeedback(
-        'Não foi possível concluir o cadastro. Verifique dados e maioridade.'
-      )
+    } catch (e) {
+      const msg =
+        e instanceof Error && e.message.trim().length > 0
+          ? e.message
+          : 'Não foi possível concluir o cadastro.'
+      setFeedback(msg)
     }
   }
 
@@ -44,11 +52,14 @@ export function RegisterPage() {
           <input
             id="idade"
             type="number"
-            min={0}
+            min={18}
             max={120}
             required
             value={idade}
-            onChange={(e) => setIdade(Number(e.target.value))}
+            onChange={(e) => {
+              const v = Number.parseInt(e.target.value, 10)
+              setIdade(Number.isFinite(v) ? v : idade)
+            }}
           />
 
           <label htmlFor="email">E-mail</label>
